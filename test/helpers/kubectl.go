@@ -172,7 +172,7 @@ var (
 		"ipv6.enabled":         "false",
 		"hostFirewall.enabled": "false",
 		"nodeinit.enabled":     "true",
-		"kubeProxyReplacement": "partial",
+		"kubeProxyReplacement": "strict",
 		"externalIPs.enabled":  "true",
 		"ipam.mode":            "kubernetes",
 	}
@@ -639,6 +639,7 @@ func (kub *Kubectl) labelNodes() error {
 	}
 
 	index := 1
+	var tmp []string
 	for _, nodeName := range nodesList {
 		ciNodeName := fmt.Sprintf("k8s%d", index)
 		cmd := fmt.Sprintf("%s label --overwrite node %s cilium.io/ci-node=%s", KubectlCmd, nodeName, ciNodeName)
@@ -646,10 +647,16 @@ func (kub *Kubectl) labelNodes() error {
 		if !res.WasSuccessful() {
 			return fmt.Errorf("unable to label node with '%s': %s", cmd, res.OutputPrettyPrint())
 		}
+		for _, wo := range GetNodesWithoutCilium() {
+			if wo == ciNodeName {
+				tmp = append(tmp, nodeName)
+				break
+			}
+		}
 		index++
 	}
 
-	noCiliumNodeNames := strings.Join(GetNodesWithoutCilium(), " ")
+	noCiliumNodeNames := strings.Join(tmp, " ")
 	if noCiliumNodeNames != "" {
 		// Prevent scheduling any pods on the node, as it will be used as an external client
 		// to send requests to k8s{1,2}

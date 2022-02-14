@@ -57,6 +57,9 @@ rm $RUNDIR/encap.state 2> /dev/null || true
 # This directory was created by the daemon and contains the per container header file
 DIR="$PWD/globals"
 
+apt-get update -y
+apt-get install -y strace
+
 function setup_dev()
 {
 	local -r NAME=$1
@@ -293,7 +296,9 @@ function bpf_load_cgroups()
 
 	if [ "$RETCODE" -eq "0" ]; then
 		set +e
-		bpftool cgroup attach $CGRP $WHERE pinned $TMP_FILE
+		echo "bpftool cgroup attach $CGRP $WHERE pinned $TMP_FILE" >> /tmp/foo.cmd
+        #sleep 36000
+		strace -f -y -yy -o /tmp/foo_$WHERE.strace bpftool cgroup attach $CGRP $WHERE pinned $TMP_FILE
 		RETCODE=$?
 		set -e
 		rm -f $TMP_FILE

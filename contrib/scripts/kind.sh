@@ -5,7 +5,7 @@
 set -euo pipefail
 
 default_controlplanes=1
-default_workers=1
+default_workers=2
 default_cluster_name=""
 default_image=""
 
@@ -88,6 +88,7 @@ $(control_planes)
 $(workers)
 networking:
   disableDefaultCNI: true
+  kubeProxyMode: none
 containerdConfigPatches:
 - |-
   [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:${reg_port}"]

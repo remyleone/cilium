@@ -565,14 +565,14 @@ Secondary Interface %s :: IPv4: (%s, %s), IPv6: (%s, %s)`,
 			testCurlFromOutsideWithLocalPort(kubectl, ni, svc2URL, 1, false, 64002)
 		})
 
-		It("Tests with secondary NodePort device", func() {
-			DeployCiliumOptionsAndDNS(kubectl, ciliumFilename, map[string]string{
-				"loadBalancer.mode": "snat",
-				"devices":           fmt.Sprintf(`'{%s,%s}'`, ni.PrivateIface, helpers.SecondaryIface),
-			})
+		//It("Tests with secondary NodePort device", func() {
+		//	DeployCiliumOptionsAndDNS(kubectl, ciliumFilename, map[string]string{
+		//		"loadBalancer.mode": "snat",
+		//		"devices":           fmt.Sprintf(`'{%s,%s}'`, ni.PrivateIface, helpers.SecondaryIface),
+		//	})
 
-			testNodePortExternal(kubectl, ni, true, false, false)
-		})
+		//	testNodePortExternal(kubectl, ni, true, false, false)
+		//})
 
 		It("Tests with direct routing and DSR", func() {
 			DeployCiliumOptionsAndDNS(kubectl, ciliumFilename, map[string]string{

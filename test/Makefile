@@ -40,6 +40,8 @@ k8s-kind:
 	fi
 	@CNI_INTEGRATION=kind \
 		K8S_VERSION="$$(kubectl version -o json | jq -r '.serverVersion | "\(.major).\(.minor)"')" \
+		NETNEXT=true \
+		KUBEPROXY=0 \
 		ginkgo --focus "$(FOCUS)" --tags integration_tests -v -- \
 			-cilium.testScope=k8s \
 			-cilium.provision=false \
